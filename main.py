@@ -35,8 +35,9 @@ def register():
         name = request.form['name']
         email = request.form['email']
         password = request.form['password']
+        password_hash = generate_password_hash(password=password, method='pbkdf2', salt_length=8)
         with app.app_context():
-            user = User(name=name, email=email, password=password)
+            user = User(name=name, email=email, password=password_hash)
             db.session.add(user)
             db.session.commit()
 
