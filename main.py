@@ -39,7 +39,9 @@ def register():
             user = User(name=name, email=email, password=password)
             db.session.add(user)
             db.session.commit()
-        return render_template('secrets.html', user=user)
+
+            user_data = db.session.execute(db.select(User).where(User.email == email)).scalar()
+        return render_template('secrets.html', user=user_data)
 
     return render_template("register.html")
 
