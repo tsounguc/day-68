@@ -48,13 +48,18 @@ def register():
         password = request.form['password']
         password_hash = generate_password_hash(password=password, method='pbkdf2', salt_length=8)
         with app.app_context():
-            user = User(name=name, email=email, password=password_hash)
-            db.session.add(user)
-            db.session.commit()
+            user_to_be_checked = db.session.execute(db.select(User).where(User.email == email))
+            if user_to_be_checked:
+                flash("You've already signed up with that email. Log in instead!")
+                return redirect(url_for('login'))
+            else:
+                user = User(name=name, email=email, password=password_hash)
+                db.session.add(user)
+                db.session.commit()
 
-            user_data = db.session.execute(db.select(User).where(User.email == email)).scalar()
+                user_data = db.session.execute(db.select(User).where(User.email == email)).scalar()
 
-            login_user(user_data)
+                login_user(user_data)
 
         return redirect(url_for('secrets'))
 
